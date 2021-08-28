@@ -17,12 +17,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <meta-data android:name="com.samsung.android.activity.showWhenLocked" android:value="true"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".BrowserActivity"
+            android:exported="true">
+            <meta-data android:name="com.samsung.android.activity.showWhenLocked" android:value="true"/>
         </activity>
         <receiver android:name="com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget.StepCoverAppWidget" android:exported="false">
             <intent-filter>

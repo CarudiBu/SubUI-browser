@@ -11,38 +11,37 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/topBar"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:text="Settings:" />
 
-            <Button
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="←" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
 
-            <Button
-                android:id="@+id/forward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="→" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Starting URL:" />
 
-            <Button
-                android:id="@+id/quit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="X" />
-        </LinearLayout>
+        <EditText
+            android:id="@+id/startingUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Starting URL"
+            android:inputType="textPersonName" />
 
-        <org.mozilla.geckoview.GeckoView
-            android:id="@+id/geckoview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+        <Button
+            android:id="@+id/openBrowser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open browser on main screen to log in to websites" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
