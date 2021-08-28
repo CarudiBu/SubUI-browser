@@ -13,6 +13,8 @@ import org.mozilla.geckoview.GeckoView
 
 class BrowserActivity : AppCompatActivity() {
 
+    var geckoRuntime: GeckoRuntime? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_browser)
@@ -21,11 +23,14 @@ class BrowserActivity : AppCompatActivity() {
 
         val view: GeckoView = findViewById(R.id.geckoview)
         val session = GeckoSession()
-        val runtime: GeckoRuntime = GeckoRuntime.getDefault(this)
+
+        if (geckoRuntime == null) {
+            geckoRuntime = GeckoRuntime.create(this)
+        }
 
         val sharedPref = getSharedPreferences("com.carudibu.subuibrowser.PREFS", Context.MODE_PRIVATE)
 
-        session.open(runtime)
+        session.open(geckoRuntime!!)
         view.setSession(session)
         session.loadUri(sharedPref.getString("starting_url", "https://reddit.com") ?: "https://reddit.com")
 
