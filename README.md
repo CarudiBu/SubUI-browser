@@ -1,5 +1,7 @@
-# SubUI-example
-Proof of concept of custom widgets and apps running on the Z Flip3 cover screen. Adds a widget to Z Flip3 cover screen that lets you launch a web browser-like app on the cover.
+# SubUI-browser
+Proof of concept of custom widgets and apps running on the Z Flip3 cover screen. Adds a widget to Z Flip3 cover screen that lets you launch a web browser-like app on the cover. Play music with Spotify, browse Reddit, watch YouTube. 
+
+No onscreen keyboard (yet)
 
 No root required! Note - you CANNOT have Samsung Health installed at the same time as this app.
 
