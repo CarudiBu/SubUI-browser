@@ -14,27 +14,30 @@
         <LinearLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/back"
+                style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:text="←" />
 
             <Button
                 android:id="@+id/forward"
+                style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:text="→" />
 
             <Button
                 android:id="@+id/quit"
+                style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:text="X" />
         </LinearLayout>

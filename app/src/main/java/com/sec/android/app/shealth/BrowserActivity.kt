@@ -13,8 +13,6 @@ import org.mozilla.geckoview.GeckoView
 
 class BrowserActivity : AppCompatActivity() {
 
-    var geckoRuntime: GeckoRuntime? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_browser)
@@ -22,23 +20,26 @@ class BrowserActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         val view: GeckoView = findViewById(R.id.geckoview)
-        val session = GeckoSession()
+
+        var geckoSession = GeckoSession()
 
         if (geckoRuntime == null) {
             geckoRuntime = GeckoRuntime.create(this)
         }
 
+        geckoSession.open(geckoRuntime!!)
+
+        view.setSession(geckoSession)
+
         val sharedPref = getSharedPreferences("com.carudibu.subuibrowser.PREFS", Context.MODE_PRIVATE)
 
-        session.open(geckoRuntime!!)
-        view.setSession(session)
-        session.loadUri(sharedPref.getString("starting_url", "https://reddit.com") ?: "https://reddit.com")
+        geckoSession.loadUri(sharedPref.getString("starting_url", "https://reddit.com") ?: "https://reddit.com")
 
         findViewById<Button>(R.id.back).setOnClickListener {
-            session.goBack()
+            geckoSession.goBack()
         }
         findViewById<Button>(R.id.forward).setOnClickListener {
-            session.goForward()
+            geckoSession.goForward()
         }
         findViewById<Button>(R.id.quit).setOnClickListener {
             finish()
@@ -46,9 +47,7 @@ class BrowserActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-
+    companion object {
+        var geckoRuntime: GeckoRuntime? = null
     }
 }
