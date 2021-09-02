@@ -9,5 +9,5 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
-rootProject.name = "SecondScreenTest"
+rootProject.name = "SubUI-browser"
 include ':app'
