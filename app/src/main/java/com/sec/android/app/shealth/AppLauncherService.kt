@@ -17,7 +17,7 @@ class AppLauncherService : Service() {
         override fun handleMessage(msg: Message) {
             try {
                 val intent = Intent()
-                intent.setComponent(ComponentName("com.sec.android.app.shealth","com.sec.android.app.shealth.BrowserActivity"))
+                intent.component = ComponentName("com.sec.android.app.shealth","com.sec.android.app.shealth.BrowserActivity")
                 val options = ActivityOptions.makeBasic().setLaunchDisplayId(1)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 

@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.Toast
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoSession
+import org.mozilla.geckoview.GeckoSessionSettings
 import org.mozilla.geckoview.GeckoView
 
 class BrowserActivity : AppCompatActivity() {
@@ -21,7 +22,16 @@ class BrowserActivity : AppCompatActivity() {
 
         val view: GeckoView = findViewById(R.id.geckoview)
 
-        var geckoSession = GeckoSession()
+        val settings = GeckoSessionSettings.Builder()
+            .usePrivateMode(true)
+            .useTrackingProtection(true)
+            .suspendMediaWhenInactive(true)
+            .allowJavascript(true)
+            .userAgentMode(GeckoSessionSettings.USER_AGENT_MODE_MOBILE)
+            .displayMode(GeckoSessionSettings.DISPLAY_MODE_STANDALONE)
+            .viewportMode(GeckoSessionSettings.VIEWPORT_MODE_DESKTOP)
+
+        val geckoSession = GeckoSession(settings.build())
 
         if (geckoRuntime == null) {
             geckoRuntime = GeckoRuntime.create(this)

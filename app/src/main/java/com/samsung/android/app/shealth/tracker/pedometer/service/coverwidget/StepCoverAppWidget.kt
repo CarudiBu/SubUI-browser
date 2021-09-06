@@ -23,7 +23,7 @@ class StepCoverAppWidget: AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent) {
         if (onClickTag.equals(intent.action)) {
             val intent = Intent()
-            intent.setComponent(ComponentName("com.sec.android.app.shealth", "com.sec.android.app.shealth.AppLauncherService"))
+            intent.component = ComponentName("com.sec.android.app.shealth", "com.sec.android.app.shealth.AppLauncherService")
             context?.startService(intent)
         }
         else{
