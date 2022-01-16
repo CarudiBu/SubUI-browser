@@ -1,7 +1,7 @@
 package com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget
 
 /* ====================================================================
- * Copyright (c) 2012-2021 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -123,11 +123,12 @@ class StepCoverAppWidget: AppWidgetProvider() {
                     Intent.FLAG_ACTIVITY_NEW_TASK).putExtras(extras))
             } else {
                 if (SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)) {
-                    val mReceiver: BroadcastReceiver = OffBroadcastReceiver(
-                        ComponentName(launchPackage, launchActivity)
-                    )
                     IntentFilter(Intent.ACTION_SCREEN_OFF).also {
-                        context.applicationContext.registerReceiver(mReceiver, it)
+                        context.applicationContext.registerReceiver(
+                            OffBroadcastReceiver(
+                                ComponentName(launchPackage, launchActivity)
+                            ), it
+                        )
                     }
                 }
                 val coverIntent = Intent(Intent.ACTION_MAIN)

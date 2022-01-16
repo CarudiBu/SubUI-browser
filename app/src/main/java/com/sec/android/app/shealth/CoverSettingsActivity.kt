@@ -1,7 +1,7 @@
 package com.sec.android.app.shealth
 
 /* ====================================================================
- * Copyright (c) 2012-2021 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -230,7 +230,7 @@ class CoverSettingsActivity : AppCompatActivity() {
         packages.removeIf { item -> item.activityInfo.packageName == packageName }
         Collections.sort(packages, ResolveInfo.DisplayNameComparator(packageManager))
 
-        val unlisted: HashSet<String> = HashSet<String>().plus(packageName) as HashSet<String>
+        val unlisted: HashSet<String> = HashSet()
         val hide: Set<String> = SamSprung.prefs.getStringSet(
             SamSprung.prefHidden, setOf<String>()) as Set<String>
         unlisted.addAll(hide)

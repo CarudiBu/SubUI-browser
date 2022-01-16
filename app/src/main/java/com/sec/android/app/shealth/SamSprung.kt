@@ -1,7 +1,7 @@
 package com.sec.android.app.shealth
 
 /* ====================================================================
- * Copyright (c) 2012-2021 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -54,7 +54,6 @@ package com.sec.android.app.shealth
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Process
 import java.lang.ref.SoftReference
 import kotlin.system.exitProcess
 
@@ -68,7 +67,7 @@ class SamSprung : Application() {
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
             error.printStackTrace()
             // Unrecoverable error encountered
-            Process.killProcess(Process.myPid())
+            exitProcess(1)
         }
         if (prefs.contains("screenoff")) {
             with(prefs.edit()) {
