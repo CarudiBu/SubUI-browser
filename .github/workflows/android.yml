@@ -46,13 +46,13 @@ jobs:
     # Example use of `signedReleaseFile` output -- not needed
     - uses: actions/upload-artifact@v2
       with:
-        name: ZFlip-Launcher-${{ env.GIT_HASH }}
+        name: SamSprung-Widget-${{ env.GIT_HASH }}
         path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "custom"
+        automatic_release_tag: "latest"
         prerelease: ${{ github.event_name == 'pull_request' }}
         title: SamSprung-${{ env.GIT_HASH }}
         files: ${{steps.sign_app.outputs.signedReleaseFile}}
