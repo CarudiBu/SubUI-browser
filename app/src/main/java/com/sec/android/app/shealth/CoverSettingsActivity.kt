@@ -55,10 +55,7 @@ import android.Manifest
 import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -134,7 +131,7 @@ class CoverSettingsActivity : AppCompatActivity() {
             // End of permission approval process
         }
 
-        val overlayLauncher = registerForActivityResult(
+        val noticeLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if (!Settings.System.canWrite(applicationContext)) {
                 settingsLauncher.launch(Intent(
@@ -144,12 +141,11 @@ class CoverSettingsActivity : AppCompatActivity() {
             }
         }
 
-        val noticeLauncher = registerForActivityResult(
+        val overlayLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
-            if (!Settings.canDrawOverlays(applicationContext)) {
-                overlayLauncher.launch(Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
+            if (isNotificationListenerEnabled()) {
+                noticeLauncher.launch(Intent(
+                    Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
                 ))
             } else if (!Settings.System.canWrite(applicationContext)) {
                 settingsLauncher.launch(Intent(
@@ -157,11 +153,14 @@ class CoverSettingsActivity : AppCompatActivity() {
                     Uri.parse("package:$packageName")
                 ))
             }
+            IntentFilter(Intent.ACTION_SCREEN_ON).also {
+                applicationContext.registerReceiver(OffBroadcastReceiver(), it)
+            }
         }
 
         findViewById<Button>(R.id.openSettings).setOnClickListener {
-            if (isNotificationListenerEnabled()) {
-                if (Settings.canDrawOverlays(applicationContext)) {
+            if (Settings.canDrawOverlays(applicationContext)) {
+                if (isNotificationListenerEnabled()) {
                     if (Settings.System.canWrite(applicationContext)) {
                         Toast.makeText(
                             applicationContext,
@@ -175,14 +174,14 @@ class CoverSettingsActivity : AppCompatActivity() {
                         ))
                     }
                 } else {
-                    overlayLauncher.launch(Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:$packageName")
+                    noticeLauncher.launch(Intent(
+                        Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
                     ))
                 }
             } else {
-                noticeLauncher.launch(Intent(
-                    Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                overlayLauncher.launch(Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
                 ))
             }
         }
