@@ -143,7 +143,7 @@ class CoverSettingsActivity : AppCompatActivity() {
 
         val overlayLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
-            if (isNotificationListenerEnabled()) {
+            if (!isNotificationListenerEnabled()) {
                 noticeLauncher.launch(Intent(
                     Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
                 ))
