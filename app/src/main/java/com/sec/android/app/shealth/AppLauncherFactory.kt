@@ -156,9 +156,12 @@ class AppLauncherFactory : RemoteViewsService() {
                 icon, getBitmapFromDrawable(applicationIcon)
             )
             if (!isGridView) {
-                rv.setTextViewText(
-                    R.id.widgetItemText,
-                    application.loadLabel(pacMan).toString())
+                val label: CharSequence? = try {
+                    application.loadLabel(pacMan)
+                } catch (e: Exception) {
+                    application.nonLocalizedLabel
+                }
+                rv.setTextViewText(R.id.widgetItemText, label)
             }
 
             val extras = Bundle()

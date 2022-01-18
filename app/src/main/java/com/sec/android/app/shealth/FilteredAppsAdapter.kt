@@ -99,7 +99,11 @@ class FilteredAppsAdapter(
 
         val application = packages[position]
 
-        val appName = application.loadLabel(pacMan).toString()
+        val appName: CharSequence? = try {
+            application.loadLabel(pacMan)
+        } catch (e: Exception) {
+            application.nonLocalizedLabel
+        }
 
         val detailView = convertView!!.findViewById<LinearLayout>(R.id.hiddenItemContainer)
 

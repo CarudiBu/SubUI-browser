@@ -66,10 +66,13 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -95,6 +98,8 @@ class CoverSettingsActivity : AppCompatActivity() {
     companion object {
         const val LOGCAT = 9001
     }
+
+    private lateinit var switch: SwitchCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,66 +129,6 @@ class CoverSettingsActivity : AppCompatActivity() {
                 R.string.caveats_warning,
                 Toast.LENGTH_LONG
             ).show()
-        }
-
-        val settingsLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-            // End of permission approval process
-        }
-
-        val noticeLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-            if (!Settings.System.canWrite(applicationContext)) {
-                settingsLauncher.launch(Intent(
-                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:$packageName")
-                ))
-            }
-        }
-
-        val overlayLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-            if (!isNotificationListenerEnabled()) {
-                noticeLauncher.launch(Intent(
-                    Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-                ))
-            } else if (!Settings.System.canWrite(applicationContext)) {
-                settingsLauncher.launch(Intent(
-                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:$packageName")
-                ))
-            }
-            IntentFilter(Intent.ACTION_SCREEN_ON).also {
-                applicationContext.registerReceiver(OffBroadcastReceiver(), it)
-            }
-        }
-
-        findViewById<Button>(R.id.openSettings).setOnClickListener {
-            if (Settings.canDrawOverlays(applicationContext)) {
-                if (isNotificationListenerEnabled()) {
-                    if (Settings.System.canWrite(applicationContext)) {
-                        Toast.makeText(
-                            applicationContext,
-                            R.string.settings_notice,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        settingsLauncher.launch(Intent(
-                            Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                            Uri.parse("package:$packageName")
-                        ))
-                    }
-                } else {
-                    noticeLauncher.launch(Intent(
-                        Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-                    ))
-                }
-            } else {
-                overlayLauncher.launch(Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                ))
-            }
         }
 
         val enableScreenOff = SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)
@@ -235,6 +180,81 @@ class CoverSettingsActivity : AppCompatActivity() {
 
         val listView: ListView = findViewById(R.id.selectionListView)
         listView.adapter = FilteredAppsAdapter(this, packages, unlisted)
+    }
+
+    private val noticeLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+        // End of permission approval process
+    }
+
+    private val settingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+        if (!isNotificationListenerEnabled()) {
+            noticeLauncher.launch(Intent(
+                Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+            ))
+        }
+    }
+
+    private val overlayLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+            if (Settings.canDrawOverlays(applicationContext)) {
+                switch.isChecked = true
+                IntentFilter(Intent.ACTION_SCREEN_ON).also {
+                    applicationContext.registerReceiver(OffBroadcastReceiver(), it)
+                }
+            }
+            if (!Settings.System.canWrite(applicationContext)) {
+                settingsLauncher.launch(Intent(
+                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                    Uri.parse("package:$packageName")
+                ))
+            } else if (!isNotificationListenerEnabled()) {
+                noticeLauncher.launch(Intent(
+                    Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                ))
+            }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.action_menu, menu)
+        val itemswitch: MenuItem = menu.findItem(R.id.switch_action_bar)
+        itemswitch.setActionView(R.layout.permission_switch)
+        switch = menu.findItem(R.id.switch_action_bar).actionView
+            .findViewById(R.id.switch2) as SwitchCompat
+        switch.isChecked = Settings.canDrawOverlays(applicationContext)
+        switch.setOnClickListener {
+            if (switch.isChecked) {
+                if (Settings.canDrawOverlays(applicationContext)) {
+                        switch.isChecked = true
+                        if (Settings.System.canWrite(applicationContext)) {
+                            if (isNotificationListenerEnabled()) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    R.string.settings_notice,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                noticeLauncher.launch(Intent(
+                                    Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                                ))
+                            }
+                        } else {
+                            settingsLauncher.launch(Intent(
+                                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                                Uri.parse("package:$packageName")
+                            ))
+                        }
+                } else {
+                    switch.isChecked = false
+                    overlayLauncher.launch(Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    ))
+                }
+            }
+        }
+        return true
     }
 
     /**
