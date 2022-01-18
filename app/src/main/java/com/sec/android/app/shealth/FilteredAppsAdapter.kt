@@ -63,7 +63,10 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget.StepCoverAppWidget
 
@@ -116,22 +119,12 @@ class FilteredAppsAdapter(
                     putStringSet(SamSprung.prefHidden, hide)
                     apply()
                 }
-                Toast.makeText(
-                    context, context.getString(
-                        R.string.show_package, appName
-                    ), Toast.LENGTH_SHORT
-                ).show()
             } else {
                 hide.add(packageName)
                 with(SamSprung.prefs.edit()) {
                     putStringSet(SamSprung.prefHidden, hide)
                     apply()
                 }
-                Toast.makeText(
-                    context, context.getString(
-                        R.string.hide_package, appName
-                    ), Toast.LENGTH_SHORT
-                ).show()
             }
             sendAppWidgetUpdateBroadcast(context)
         }
