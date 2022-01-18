@@ -65,7 +65,10 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextUtils
+import android.text.style.ImageSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -131,16 +134,6 @@ class CoverSettingsActivity : AppCompatActivity() {
             ).show()
         }
 
-        val enableScreenOff = SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)
-
-        findViewById<ToggleButton>(R.id.swapScreenOff).isChecked = enableScreenOff
-        findViewById<ToggleButton>(R.id.swapScreenOff).setOnCheckedChangeListener { _, isChecked ->
-            with (SamSprung.prefs.edit()) {
-                putBoolean(SamSprung.prefScreen, isChecked)
-                apply()
-            }
-        }
-
         val isGridView = SamSprung.prefs.getBoolean(SamSprung.prefLayout, true)
 
         findViewById<ToggleButton>(R.id.swapViewType).isChecked = isGridView
@@ -152,18 +145,13 @@ class CoverSettingsActivity : AppCompatActivity() {
             sendAppWidgetUpdateBroadcast(isChecked)
         }
 
-        findViewById<Button>(R.id.cacheLogcat).setOnClickListener {
-            findViewById<ScrollView>(R.id.logWrapper).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.printLogcat).text = captureLogcat()
+        val enableScreenOff = SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)
 
-            val permission = ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), LOGCAT)
-            } else {
-                printLogcat()
+        findViewById<ToggleButton>(R.id.swapScreenOff).isChecked = enableScreenOff
+        findViewById<ToggleButton>(R.id.swapScreenOff).setOnCheckedChangeListener { _, isChecked ->
+            with (SamSprung.prefs.edit()) {
+                putBoolean(SamSprung.prefScreen, isChecked)
+                apply()
             }
         }
 
@@ -216,10 +204,47 @@ class CoverSettingsActivity : AppCompatActivity() {
             }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.logcat -> {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), LOGCAT)
+            } else {
+                findViewById<ScrollView>(R.id.logWrapper).visibility = View.VISIBLE
+                findViewById<TextView>(R.id.printLogcat).text = captureLogcat()
+                printLogcat()
+            }
+            true
+        }
+        R.id.donate -> {
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN")))
+            true
+        } else -> {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun updateMenuWithIcon(item: MenuItem, color: Int) {
+        val builder = SpannableStringBuilder().append("*").append("    ").append(item.title)
+        if (item.icon != null && item.icon.constantState != null) {
+            val drawable = item.icon.constantState!!.newDrawable()
+            if (-1 != color) drawable.mutate().setTint(color)
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val imageSpan = ImageSpan(drawable)
+            builder.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            item.title = builder
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_menu, menu)
-        val itemswitch: MenuItem = menu.findItem(R.id.switch_action_bar)
-        itemswitch.setActionView(R.layout.permission_switch)
+        updateMenuWithIcon(menu.findItem(R.id.logcat), -1)
+        updateMenuWithIcon(menu.findItem(R.id.donate), -1)
+        val actionSwitch: MenuItem = menu.findItem(R.id.switch_action_bar)
+        actionSwitch.setActionView(R.layout.permission_switch)
         switch = menu.findItem(R.id.switch_action_bar).actionView
             .findViewById(R.id.switch2) as SwitchCompat
         switch.isChecked = Settings.canDrawOverlays(applicationContext)
