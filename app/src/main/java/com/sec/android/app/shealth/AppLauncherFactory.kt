@@ -96,7 +96,7 @@ class AppLauncherFactory : RemoteViewsService() {
                 addAction(Intent.ACTION_PACKAGE_REMOVED)
                 addDataScheme("package")
             }.also {
-                SamSprung.context.registerReceiver(mReceiver, it)
+                context.registerReceiver(mReceiver, it)
             }
         }
         override fun onDataSetChanged() {
@@ -107,7 +107,7 @@ class AppLauncherFactory : RemoteViewsService() {
                         val jsonObject = JSONTokener(result).nextValue() as JSONObject
                         val lastCommit = (jsonObject["name"] as String).substring(10)
                         if (BuildConfig.COMMIT != lastCommit) {
-                            showUpdateNotification()
+                            showUpdateNotification(context)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -124,7 +124,7 @@ class AppLauncherFactory : RemoteViewsService() {
             Collections.sort(packages, ResolveInfo.DisplayNameComparator(pacMan))
         }
         override fun onDestroy() {
-            SamSprung.context.unregisterReceiver(mReceiver)
+            context.unregisterReceiver(mReceiver)
             packages.clear()
             SamSprung.notices.clear()
         }
@@ -152,14 +152,6 @@ class AppLauncherFactory : RemoteViewsService() {
             rv.setViewVisibility(
                 if (isGridView) R.id.widgetGridBadge else R.id.widgetItemBadge,
                 if (SamSprung.notices.contains(packageName)) View.VISIBLE else View.GONE)
-            /*
-            if (SamSprung.notices.contains(packageName)) {
-                applicationIcon.colorFilter =
-                    BlendModeColorFilter(ContextCompat.getColor(
-                        SamSprung.context, color.holo_orange_light
-                ), BlendMode.COLOR_DODGE)
-            }
-            */
             rv.setImageViewBitmap(
                 icon, getBitmapFromDrawable(applicationIcon)
             )
@@ -205,18 +197,18 @@ class AppLauncherFactory : RemoteViewsService() {
             return bitmapDrawable
         }
 
-        private fun showUpdateNotification() {
+        private fun showUpdateNotification(context: Context) {
             var mNotificationManager: NotificationManager? = null
 
-            val pendingIntent = PendingIntent.getActivity(SamSprung.context, 0,
-                Intent(SamSprung.context, CoverSettingsActivity::class.java),
+            val pendingIntent = PendingIntent.getActivity(context, 0,
+                Intent(context, CoverSettingsActivity::class.java),
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
                 else PendingIntent.FLAG_ONE_SHOT)
             val iconNotification = BitmapFactory.decodeResource(
-                SamSprung.context.resources, R.mipmap.s_health_icon)
+                context.resources, R.mipmap.s_health_icon)
             if (null == mNotificationManager) {
-                mNotificationManager = SamSprung.context.getSystemService(
+                mNotificationManager = context.getSystemService(
                     Context.NOTIFICATION_SERVICE) as NotificationManager
             }
             mNotificationManager.createNotificationChannelGroup(
@@ -228,12 +220,12 @@ class AppLauncherFactory : RemoteViewsService() {
             notificationChannel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
             mNotificationManager.createNotificationChannel(notificationChannel)
             val builder = NotificationCompat.Builder(
-                SamSprung.context, "update_channel")
+                context, "update_channel")
 
-            val notificationText = SamSprung.context.getString(
-                R.string.update_service, SamSprung.context.getString(R.string.app_name))
+            val notificationText = context.getString(
+                R.string.update_service, context.getString(R.string.app_name))
             builder.setContentTitle(notificationText).setTicker(notificationText)
-                .setContentText(SamSprung.context.getString(R.string.click_update_app))
+                .setContentText(context.getString(R.string.click_update_app))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setWhen(0).setOnlyAlertOnce(true)
@@ -243,7 +235,7 @@ class AppLauncherFactory : RemoteViewsService() {
                     Bitmap.createScaledBitmap(
                         iconNotification, 128, 128, false))
             }
-            builder.color = ContextCompat.getColor(SamSprung.context, R.color.purple_200)
+            builder.color = ContextCompat.getColor(context, R.color.purple_200)
 
             val notification: Notification = builder.build()
             notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL

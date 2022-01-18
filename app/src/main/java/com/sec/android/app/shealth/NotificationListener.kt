@@ -79,14 +79,14 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun sendAppWidgetUpdateBroadcast() {
-        val updateIntent = Intent(SamSprung.context, StepCoverAppWidget::class.java)
+        val updateIntent = Intent(applicationContext, StepCoverAppWidget::class.java)
         updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         updateIntent.putExtra(
             AppWidgetManager.EXTRA_APPWIDGET_IDS,
-            AppWidgetManager.getInstance(SamSprung.context).getAppWidgetIds(
-                ComponentName(SamSprung.context, StepCoverAppWidget::class.java)
+            AppWidgetManager.getInstance(applicationContext).getAppWidgetIds(
+                ComponentName(applicationContext, StepCoverAppWidget::class.java)
             )
         )
-        SamSprung.context.sendBroadcast(updateIntent)
+        applicationContext.sendBroadcast(updateIntent)
     }
 }

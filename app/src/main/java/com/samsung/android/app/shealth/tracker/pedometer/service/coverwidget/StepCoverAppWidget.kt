@@ -87,11 +87,11 @@ class StepCoverAppWidget: AppWidgetProvider() {
             val launchPackage = intent.getStringExtra("launchPackage")!!
             val launchActivity = intent.getStringExtra("launchActivity")!!
 
-            if (Settings.System.canWrite(SamSprung.context))  {
+            if (Settings.System.canWrite(context.applicationContext))  {
                 try {
                     with (SamSprung.prefs.edit()) {
                         putBoolean(SamSprung.autoRotate,  Settings.System.getInt(
-                            SamSprung.context.contentResolver,
+                            context.applicationContext.contentResolver,
                             Settings.System.ACCELEROMETER_ROTATION
                         ) == 1)
                         apply()

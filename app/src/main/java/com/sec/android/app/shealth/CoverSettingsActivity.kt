@@ -321,10 +321,10 @@ class CoverSettingsActivity : AppCompatActivity() {
 
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun installUpdate(apkUri: Uri) = withContext(Dispatchers.IO) {
-        val installer = SamSprung.context.packageManager.packageInstaller
-        val resolver = SamSprung.context.contentResolver
+        val installer = applicationContext.packageManager.packageInstaller
+        val resolver = applicationContext.contentResolver
         resolver.openInputStream(apkUri)?.use { apkStream ->
-            val length = DocumentFile.fromSingleUri(SamSprung.context, apkUri)?.length() ?: -1
+            val length = DocumentFile.fromSingleUri(applicationContext, apkUri)?.length() ?: -1
             val params = PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL)
             val sessionId = installer.createSession(params)
@@ -333,10 +333,10 @@ class CoverSettingsActivity : AppCompatActivity() {
                 apkStream.copyTo(sessionStream)
                 session.fsync(sessionStream)
             }
-            val intent = Intent(SamSprung.context, OffBroadcastReceiver::class.java)
+            val intent = Intent(applicationContext, OffBroadcastReceiver::class.java)
             intent.action = SamSprung.updating
             val pi = PendingIntent.getBroadcast(
-                SamSprung.context, SamSprung.request_code, intent,
+                applicationContext, SamSprung.request_code, intent,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
                 else PendingIntent.FLAG_UPDATE_CURRENT
@@ -356,7 +356,7 @@ class CoverSettingsActivity : AppCompatActivity() {
                     CoroutineScope(Dispatchers.Main).launch(Dispatchers.Main) {
                         installUpdate(
                             FileProvider.getUriForFile(
-                            SamSprung.context, SamSprung.provider, apk
+                            applicationContext, SamSprung.provider, apk
                         ))
                     }
                 }

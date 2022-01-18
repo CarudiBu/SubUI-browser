@@ -72,11 +72,11 @@ class OffBroadcastReceiver : BroadcastReceiver {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_PACKAGE_FULLY_REMOVED) {
-            sendAppWidgetUpdateBroadcast()
+            sendAppWidgetUpdateBroadcast(context.applicationContext)
         }
         if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
             if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
-                sendAppWidgetUpdateBroadcast()
+                sendAppWidgetUpdateBroadcast(context.applicationContext)
             }
         }
         if (intent.action == SamSprung.updating) {
@@ -91,7 +91,7 @@ class OffBroadcastReceiver : BroadcastReceiver {
                     // Installation was successful
                 } else -> {
                     Toast.makeText(
-                        SamSprung.context,
+                        context.applicationContext,
                         intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE),
                         Toast.LENGTH_LONG
                     ).show()
@@ -112,17 +112,17 @@ class OffBroadcastReceiver : BroadcastReceiver {
             context.startActivity(screenIntent, options.toBundle())
 
             componentName = null
-            SamSprung.context.unregisterReceiver(this)
+            context.applicationContext.unregisterReceiver(this)
         }
     }
 
-    private fun sendAppWidgetUpdateBroadcast() {
-        val updateIntent = Intent(SamSprung.context, StepCoverAppWidget::class.java)
+    private fun sendAppWidgetUpdateBroadcast(context: Context) {
+        val updateIntent = Intent(context, StepCoverAppWidget::class.java)
         updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
-            AppWidgetManager.getInstance(SamSprung.context).getAppWidgetIds(
-            ComponentName(SamSprung.context, StepCoverAppWidget::class.java))
+            AppWidgetManager.getInstance(context).getAppWidgetIds(
+            ComponentName(context, StepCoverAppWidget::class.java))
         )
-        SamSprung.context.sendBroadcast(updateIntent)
+        context.sendBroadcast(updateIntent)
     }
 }

@@ -91,7 +91,7 @@ class AppLauncherActivity : AppCompatActivity() {
         if (Settings.System.canWrite(applicationContext)
             && SamSprung.prefs.getBoolean(SamSprung.autoRotate, true)) {
             Settings.System.putInt(
-                SamSprung.context.contentResolver,
+                applicationContext.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION, 0
             )
         }
@@ -128,13 +128,13 @@ class AppLauncherActivity : AppCompatActivity() {
         }
         wIRCA.addWindowLayoutInfoListener(runOnUiThreadExecutor(), windowWasher)
 
-        if (Settings.canDrawOverlays(SamSprung.context)) {
+        if (Settings.canDrawOverlays(applicationContext)) {
             launchWidgetActivity(launchActivity, launchPackage)
             fakeOrientationLock(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT)
         } else {
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()) {
-                if (Settings.canDrawOverlays(SamSprung.context))  {
+                if (Settings.canDrawOverlays(applicationContext))  {
                     launchWidgetActivity(launchActivity, launchPackage)
                     fakeOrientationLock(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT)
                 }

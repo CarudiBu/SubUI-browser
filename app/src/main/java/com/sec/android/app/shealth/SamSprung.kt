@@ -52,7 +52,6 @@ package com.sec.android.app.shealth
  */
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import java.lang.ref.SoftReference
 import kotlin.system.exitProcess
@@ -60,7 +59,6 @@ import kotlin.system.exitProcess
 class SamSprung : Application() {
     override fun onCreate() {
         super.onCreate()
-        mContext = SoftReference(this)
         mPrefs = SoftReference(
             getSharedPreferences("samsprung.launcher.PREFS", MODE_PRIVATE)
         )
@@ -96,10 +94,8 @@ class SamSprung : Application() {
         const val provider: String = "com.sec.android.samsprung.provider"
         const val updating: String = "com.sec.android.samsprung.UPDATING"
         const val request_code = 8675309
-        private lateinit var mContext: SoftReference<Context>
         var isKeyguardLocked: Boolean = true
         private lateinit var mPrefs: SoftReference<SharedPreferences>
-        val context: Context get() = mContext.get()!!
         val prefs: SharedPreferences get() = mPrefs.get()!!
         var notices: HashSet<String> = hashSetOf()
         const val prefScreen: String = "prefScreen"

@@ -144,8 +144,8 @@ class FilteredAppsAdapter(
         updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         updateIntent.putExtra(
             AppWidgetManager.EXTRA_APPWIDGET_IDS,
-            AppWidgetManager.getInstance(SamSprung.context).getAppWidgetIds(
-                ComponentName(SamSprung.context, StepCoverAppWidget::class.java)
+            AppWidgetManager.getInstance(context).getAppWidgetIds(
+                ComponentName(context, StepCoverAppWidget::class.java)
             )
         )
         context.sendBroadcast(updateIntent)

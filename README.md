@@ -1,4 +1,4 @@
-## SamSprung Launcher
+## SamSprung (Launcher) Widget
 
 #### Current limitations:
 
@@ -22,11 +22,11 @@
 
 ###### From Settings
 - Open Settings -> Cover screen -> Widgets
-- Enable SamSprung Launcher
+- Enable SamSprung Widget
 
 OR
 
 ###### From Cover Screen
 - Turn on cover screen
 - Swipe to the +
-- Select SamSprung Launcher
+- Select SamSprung Widget
