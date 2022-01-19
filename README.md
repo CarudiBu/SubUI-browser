@@ -4,7 +4,8 @@
 
 #### Current limitations:
 
-- Does NOT work with OneUI 4 beta or any firmware with verification for Samsung Health.  
+- Does NOT work with Android 12 / OneUI 4 or firmware with Samsung Health verification. 
+    - New version at https://github.com/SamSprung/SamSprung-Launcher
 
 - Running apps requires Screen lock type set to None / Swipe in Settings -> Lock screen
     - Bixby unlock can be used as a workaround for other lock types  
