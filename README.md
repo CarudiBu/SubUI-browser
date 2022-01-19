@@ -1,3 +1,5 @@
+![SamSprung Logo](assets/feature_graphic.png)
+
 ## SamSprung (Launcher) Widget
 
 #### Current limitations:
