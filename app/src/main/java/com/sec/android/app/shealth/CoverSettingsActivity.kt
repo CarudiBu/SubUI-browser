@@ -249,32 +249,34 @@ class CoverSettingsActivity : AppCompatActivity() {
             .findViewById(R.id.switch2) as SwitchCompat
         switch.isChecked = Settings.canDrawOverlays(applicationContext)
         switch.setOnClickListener {
-            if (Settings.canDrawOverlays(applicationContext)) {
-                switch.isChecked = true
-                if (Settings.System.canWrite(applicationContext)) {
-                    if (isNotificationListenerEnabled()) {
-                        Toast.makeText(
-                            applicationContext,
-                            R.string.settings_notice,
-                            Toast.LENGTH_LONG
-                        ).show()
+            if (switch.isChecked) {
+                if (Settings.canDrawOverlays(applicationContext)) {
+                    switch.isChecked = true
+                    if (Settings.System.canWrite(applicationContext)) {
+                        if (isNotificationListenerEnabled()) {
+                            Toast.makeText(
+                                applicationContext,
+                                R.string.settings_notice,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            noticeLauncher.launch(Intent(
+                                Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                            ))
+                        }
                     } else {
-                        noticeLauncher.launch(Intent(
-                            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                        settingsLauncher.launch(Intent(
+                            Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                            Uri.parse("package:$packageName")
                         ))
                     }
                 } else {
-                    settingsLauncher.launch(Intent(
-                        Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                    switch.isChecked = false
+                    overlayLauncher.launch(Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:$packageName")
                     ))
                 }
-            } else {
-                switch.isChecked = false
-                overlayLauncher.launch(Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                ))
             }
         }
         return true
