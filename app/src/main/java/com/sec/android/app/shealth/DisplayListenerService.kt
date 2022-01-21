@@ -53,17 +53,18 @@ package com.sec.android.app.shealth
 
 import android.annotation.SuppressLint
 import android.app.*
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.hardware.display.DisplayManager
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import kotlin.system.exitProcess
 
 
 class DisplayListenerService : Service() {
@@ -104,42 +105,9 @@ class DisplayListenerService : Service() {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    if (SamSprung.useAppLauncherActivity) {
-                        val displayIntent = Intent(Intent.ACTION_MAIN)
-                        displayIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-                        displayIntent.component = ComponentName(launchPackage, launchActivity)
-                        val options = ActivityOptions.makeBasic().setLaunchDisplayId(display)
-                        displayIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        displayIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                        displayIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-                        displayIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                        startActivity(displayIntent, options.toBundle())
-
-                        // Only ghosts can pass through here
-                        exitProcess(0)
-                    }
                 } else {
                     if (SamSprung.isKeyguardLocked)
                         @Suppress("DEPRECATION") mKeyguardLock.disableKeyguard()
-                    if (SamSprung.useAppLauncherActivity) {
-                        val extras = Bundle()
-                        extras.putString("launchPackage", launchPackage)
-                        extras.putString("launchActivity", launchActivity)
-                        startActivity(Intent(applicationContext,
-                            AppLauncherActivity::class.java).addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK).putExtras(extras))
-                    }
-                }
-                if (!SamSprung.useAppLauncherActivity) {
-                    val displayIntent = Intent(Intent.ACTION_MAIN)
-                    displayIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-                    displayIntent.component = ComponentName(launchPackage, launchActivity)
-                    val options = ActivityOptions.makeBasic().setLaunchDisplayId(display)
-                    displayIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    displayIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                    displayIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-                    displayIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                    startActivity(displayIntent, options.toBundle())
                 }
             }
 
@@ -159,11 +127,13 @@ class DisplayListenerService : Service() {
         if (null != mDisplayListener) {
             displayManager.unregisterDisplayListener(mDisplayListener)
         }
-        if (SamSprung.prefs.getBoolean(SamSprung.autoRotate, true)) {
-            Settings.System.putInt(
-                applicationContext.contentResolver,
-                Settings.System.ACCELEROMETER_ROTATION, 1
-            )
+        if (Settings.System.canWrite(applicationContext)) {
+            try {
+                Settings.System.putInt(applicationContext.contentResolver,
+                    Settings.System.ACCELEROMETER_ROTATION,
+                    SamSprung.prefs.getBoolean(SamSprung.autoRotate, true).int
+                )
+            } catch (ignored: Settings.SettingNotFoundException) { }
         }
         if (SamSprung.isKeyguardLocked)
             @Suppress("DEPRECATION") mKeyguardLock.reenableKeyguard()
@@ -212,4 +182,6 @@ class DisplayListenerService : Service() {
         builder.color = ContextCompat.getColor(this, R.color.purple_200)
         startForeground(startId, builder.build())
     }
+
+    private val Boolean.int get() = if (this) 1 else 0
 }

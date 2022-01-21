@@ -101,6 +101,15 @@ class StepCoverAppWidget: AppWidgetProvider() {
                 }
             }
 
+            if (Settings.System.canWrite(context.applicationContext)) {
+                try {
+                    Settings.System.putInt(
+                        context.applicationContext.contentResolver,
+                        Settings.System.ACCELEROMETER_ROTATION, 1
+                    )
+                } catch (ignored: Settings.SettingNotFoundException) { }
+            }
+
             val mKeyguardManager = (context.getSystemService(
                 Context.KEYGUARD_SERVICE) as KeyguardManager)
             @Suppress("DEPRECATION")
@@ -117,11 +126,6 @@ class StepCoverAppWidget: AppWidgetProvider() {
             extras.putString("launchActivity", launchActivity)
             context.startForegroundService(serviceIntent.putExtras(extras))
 
-            if (SamSprung.useAppLauncherActivity) {
-                context.startActivity(Intent(context.applicationContext,
-                    AppLauncherActivity::class.java).addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK).putExtras(extras))
-            } else {
                 if (SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)) {
                     IntentFilter(Intent.ACTION_SCREEN_OFF).also {
                         context.applicationContext.registerReceiver(
@@ -151,7 +155,6 @@ class StepCoverAppWidget: AppWidgetProvider() {
                 coverIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
                 coverIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 context.startActivity(coverIntent.putExtras(extras), options.toBundle())
-            }
         }
         super.onReceive(context, intent)
     }
