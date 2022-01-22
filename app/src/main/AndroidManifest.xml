@@ -53,6 +53,12 @@
                 android:resource="@xml/cover_screen_widget" />
         </receiver>
         <receiver android:name=".OffBroadcastReceiver" />
+        <receiver android:name=".GitBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
         <service android:name=".AppLauncherFactory"
             android:exported="true"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

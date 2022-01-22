@@ -116,16 +116,24 @@ class DisplayListenerService : Service() {
 
     private fun resetLaunchedApplication(launchPackage: String, launchActivity: String?) {
         if (null != launchActivity) {
+            val options = ActivityOptions.makeBasic().setLaunchDisplayId(0)
+
             val coverIntent = Intent(Intent.ACTION_MAIN)
             coverIntent.addCategory(Intent.CATEGORY_LAUNCHER)
             coverIntent.component = ComponentName(launchPackage, launchActivity)
-            val options = ActivityOptions.makeBasic().setLaunchDisplayId(0)
-            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            coverIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            coverIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            coverIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            coverIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_FORWARD_RESULT or
+                    Intent.FLAG_ACTIVITY_NO_ANIMATION
             startActivity(coverIntent, options.toBundle())
+
+            val homeLauncher = Intent(Intent.ACTION_MAIN)
+            homeLauncher.addCategory(Intent.CATEGORY_HOME)
+            homeLauncher.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_FORWARD_RESULT or
+                    Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(homeLauncher, options.toBundle())
         }
     }
 
