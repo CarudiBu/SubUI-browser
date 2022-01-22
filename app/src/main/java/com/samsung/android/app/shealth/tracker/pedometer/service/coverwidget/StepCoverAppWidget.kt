@@ -120,41 +120,38 @@ class StepCoverAppWidget: AppWidgetProvider() {
                 mKeyguardManager.newKeyguardLock(coverLock).disableKeyguard()
             }
 
-            val serviceIntent = Intent(context, DisplayListenerService::class.java)
-            val extras = Bundle()
-            extras.putString("launchPackage", launchPackage)
-            extras.putString("launchActivity", launchActivity)
-            context.startForegroundService(serviceIntent.putExtras(extras))
+            context.startForegroundService(Intent(context, DisplayListenerService::class.java)
+                .putExtra("launchPackage", launchPackage)
+                .putExtra("launchActivity", launchActivity))
 
-                if (SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)) {
-                    IntentFilter(Intent.ACTION_SCREEN_OFF).also {
-                        context.applicationContext.registerReceiver(
-                            OffBroadcastReceiver(
-                                ComponentName(launchPackage, launchActivity)
-                            ), it
-                        )
-                    }
-                }
-                val coverIntent = Intent(Intent.ACTION_MAIN)
-                coverIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-                coverIntent.component = ComponentName(launchPackage, launchActivity)
-                val options = ActivityOptions.makeBasic().setLaunchDisplayId(1)
-                try {
-                    val applicationInfo: ApplicationInfo =
-                        context.packageManager.getApplicationInfo(
-                            launchPackage, PackageManager.GET_META_DATA
-                        )
-                    applicationInfo.metaData.putString(
-                        "com.samsung.android.activity.showWhenLocked", "true"
+            if (SamSprung.prefs.getBoolean(SamSprung.prefScreen, false)) {
+                IntentFilter(Intent.ACTION_SCREEN_OFF).also {
+                    context.applicationContext.registerReceiver(
+                        OffBroadcastReceiver(
+                            ComponentName(launchPackage, launchActivity)
+                        ), it
                     )
-                } catch (e: PackageManager.NameNotFoundException) {
-                    e.printStackTrace()
                 }
-                coverIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                coverIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                coverIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-                coverIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                context.startActivity(coverIntent.putExtras(extras), options.toBundle())
+            }
+            val coverIntent = Intent(Intent.ACTION_MAIN)
+            coverIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+            coverIntent.component = ComponentName(launchPackage, launchActivity)
+            val options = ActivityOptions.makeBasic().setLaunchDisplayId(1)
+            try {
+                val applicationInfo: ApplicationInfo =
+                    context.packageManager.getApplicationInfo(
+                        launchPackage, PackageManager.GET_META_DATA
+                    )
+                applicationInfo.metaData.putString(
+                    "com.samsung.android.activity.showWhenLocked", "true"
+                )
+            } catch (e: PackageManager.NameNotFoundException) {
+                e.printStackTrace()
+            }
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            context.startActivity(coverIntent, options.toBundle())
         }
         super.onReceive(context, intent)
     }

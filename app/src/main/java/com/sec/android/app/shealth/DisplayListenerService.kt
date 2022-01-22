@@ -53,6 +53,7 @@ package com.sec.android.app.shealth
 
 import android.annotation.SuppressLint
 import android.app.*
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -63,6 +64,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
+import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 
@@ -79,16 +81,16 @@ class DisplayListenerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
+        val launchPackage = intent?.getStringExtra("launchPackage")
+        val launchActivity = intent?.getStringExtra("launchActivity")
+
         @Suppress("DEPRECATION")
         val mKeyguardLock = (getSystemService(Context.KEYGUARD_SERVICE)
                 as KeyguardManager).newKeyguardLock(coverLock)
         val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
 
-        val launchPackage = intent?.getStringExtra("launchPackage")
-        val launchActivity = intent?.getStringExtra("launchActivity")
-
-        if (null == launchPackage || null == launchActivity)
-            return dismissDisplayListener(displayManager, mKeyguardLock)
+        if (null == launchPackage)
+            return dismissDisplayService(displayManager, mKeyguardLock)
 
         showForegroundNotification(startId)
 
@@ -96,15 +98,8 @@ class DisplayListenerService : Service() {
             override fun onDisplayAdded(display: Int) {}
             override fun onDisplayChanged(display: Int) {
                 if (display == 0) {
-                    displayManager.unregisterDisplayListener(this)
-                    if (SamSprung.isKeyguardLocked)
-                        @Suppress("DEPRECATION") mKeyguardLock.reenableKeyguard()
-                    try {
-                        stopForeground(true)
-                        stopSelf()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    dismissDisplayListener(displayManager, mKeyguardLock)
+                    resetLaunchedApplication(launchPackage, launchActivity)
                 } else {
                     if (SamSprung.isKeyguardLocked)
                         @Suppress("DEPRECATION") mKeyguardLock.disableKeyguard()
@@ -119,11 +114,26 @@ class DisplayListenerService : Service() {
         return START_STICKY
     }
 
+    private fun resetLaunchedApplication(launchPackage: String, launchActivity: String?) {
+        if (null != launchActivity) {
+            val coverIntent = Intent(Intent.ACTION_MAIN)
+            coverIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+            coverIntent.component = ComponentName(launchPackage, launchActivity)
+            val options = ActivityOptions.makeBasic().setLaunchDisplayId(0)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+            coverIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(coverIntent, options.toBundle())
+        }
+    }
+
     private fun dismissDisplayListener(
         displayManager: DisplayManager,
         @Suppress("DEPRECATION")
         mKeyguardLock: KeyguardManager.KeyguardLock
-    ): Int {
+    ) {
         if (null != mDisplayListener) {
             displayManager.unregisterDisplayListener(mDisplayListener)
         }
@@ -140,9 +150,16 @@ class DisplayListenerService : Service() {
         try {
             stopForeground(true)
             stopSelf()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (ignored: Exception) { }
+    }
+
+    private fun dismissDisplayService(
+        displayManager: DisplayManager,
+        @Suppress("DEPRECATION")
+        mKeyguardLock: KeyguardManager.KeyguardLock
+    ): Int {
+
+        dismissDisplayListener(displayManager, mKeyguardLock)
         return START_NOT_STICKY
     }
 
