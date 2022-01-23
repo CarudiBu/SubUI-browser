@@ -40,7 +40,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:dividerHeight="1dp"
-        android:divider="@color/WHITE"
+        android:divider="?android:textColorPrimary"
         tools:listitem="@layout/step_widget_item" />
 
     <Space
