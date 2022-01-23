@@ -5,11 +5,11 @@
         android:id="@+id/switch_action_bar"
         android:title="@string/app_name"
         app:actionLayout="@layout/permission_switch"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/logcat"
         android:title="@string/capture_logcat"
-        android:icon="@mipmap/ic_github_white_24dp"
+        android:icon="@drawable/ic_github_octocat_24dp"
         app:showAsAction="never" />
     <item
         android:id="@+id/donate"
