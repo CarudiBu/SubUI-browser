@@ -329,9 +329,9 @@ class CoverSettingsActivity : AppCompatActivity() {
         try {
             var line: String?
             val mLogcatProc: Process = Runtime.getRuntime().exec(arrayOf(
-                "logcat", "-d",
+                "logcat", "-d", "-t", "512", BuildConfig.APPLICATION_ID,
                 "com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget",
-                "-t", "512"
+                "AppIconSolution:S", "ViewRootImpl:S", "IssueReporterActivity:S"
             ))
             val reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
             log.append(separator)
