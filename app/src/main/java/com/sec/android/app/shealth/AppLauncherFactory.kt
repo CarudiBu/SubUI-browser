@@ -238,7 +238,7 @@ class AppLauncherFactory : RemoteViewsService() {
                     Bitmap.createScaledBitmap(
                         iconNotification, 128, 128, false))
             }
-            builder.color = ContextCompat.getColor(context, R.color.purple_200)
+            builder.color = ContextCompat.getColor(context, R.color.primary_dark)
 
             val notification: Notification = builder.build()
             notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL

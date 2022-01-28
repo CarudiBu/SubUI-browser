@@ -74,6 +74,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
@@ -94,8 +95,8 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
+import java.util.concurrent.Executors
 import kotlin.collections.HashSet
-
 
 class CoverSettingsActivity : AppCompatActivity() {
     companion object {
@@ -108,11 +109,14 @@ class CoverSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.step_widget_edit)
 
-        val files: Array<File>? = filesDir.listFiles { _, name ->
-            name.lowercase(Locale.getDefault()).endsWith(".apk") }
-        if (null != files) {
-            for (file in files) {
-                if (!file.isDirectory) file.delete()
+        Executors.newSingleThreadExecutor().execute {
+            val files: Array<File>? = filesDir.listFiles { _, name ->
+                name.lowercase(Locale.getDefault()).endsWith(".apk")
+            }
+            if (null != files) {
+                for (file in files) {
+                    if (!file.isDirectory) file.delete()
+                }
             }
         }
         if (packageManager.canRequestPackageInstalls()) {
@@ -125,6 +129,16 @@ class CoverSettingsActivity : AppCompatActivity() {
             }.launch(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).setData(
                 Uri.parse(String.format("package:%s", packageName))))
         }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.deprecated_notice)
+            .setMessage(R.string.deprecated_details)
+            .setCancelable(false)
+            .setPositiveButton(R.string.button_download) { dialog, _ ->
+                startActivity(Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/SamSprung/SamSprung-TooUI")))
+                dialog.dismiss()
+            }.show()
 
         if (isDeviceSecure()) {
             Toast.makeText(
