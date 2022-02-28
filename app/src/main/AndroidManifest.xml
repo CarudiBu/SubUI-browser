@@ -52,6 +52,7 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/cover_screen_widget" />
+            <meta-data android:name="com.samsung.android.appwidget.PRIVACY_WIDGET" android:value="true"/>
         </receiver>
         <receiver android:name=".OffBroadcastReceiver" />
         <receiver android:name=".GitBroadcastReceiver"
